@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Estoque Pro | Gestão Inteligente</title>
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- FIX #1: Bootstrap Icons (estava faltando — causava todos os ícones bi-* em branco) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ─── Toast de Notificação ─────────────────────────────── -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 9999;">
+  <div id="appToast" class="toast align-items-center text-white border-0 bg-success" role="alert" aria-live="assertive">
+    <div class="d-flex">
+      <div class="toast-body fw-medium" id="toastMessage">Mensagem</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Fechar"></button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── Tela de Login ─────────────────────────────────────── -->
+<div id="login-screen" class="vh-100 vw-100 d-flex justify-content-center align-items-center bg-light position-fixed top-0 start-0" style="z-index: 1050;">
+  <div class="card border-0 shadow rounded-4 p-4" style="width: 100%; max-width: 400px;">
+    <div class="text-center mb-4">
+      <div class="bg-success text-white rounded d-inline-block p-3 mb-2 h3 shadow-sm">📦</div>
+      <h3 class="fw-bold">Estoque Pro</h3>
+      <p class="text-muted small">Faça login para acessar o sistema</p>
+    </div>
+    <form id="loginForm">
+      <div class="mb-3">
+        <label for="login-email" class="form-label small fw-bold text-secondary">E-mail</label>
+        <input type="email" class="form-control rounded-3" id="login-email" placeholder="seu@email.com" required />
+      </div>
+      <div class="mb-4">
+        <label for="login-senha" class="form-label small fw-bold text-secondary">Senha</label>
+        <input type="password" class="form-control rounded-3" id="login-senha" placeholder="••••••••" required />
+      </div>
+      <button type="submit" id="loginBtn" class="btn btn-success w-100 fw-bold rounded-pill shadow-sm">Entrar</button>
+    </form>
+  </div>
+</div>
+
+<!-- ─── Layout Principal ──────────────────────────────────── -->
+<div class="container-fluid p-0 d-flex">
+
+  <!-- Sidebar -->
+  <aside class="sidebar d-flex flex-column p-3 text-white">
+    <div class="sidebar-logo d-flex align-items-center gap-2 mb-4 pb-3 border-bottom border-secondary">
+      <div class="logo-icon bg-success p-2 rounded">📦</div>
+      <div>
+        <div class="logo-name h5 mb-0">Estoque Pro</div>
+        <small class="text-success text-uppercase fw-bold" style="font-size: 10px;">PEX · ADS Descomplica</small>
+      </div>
+    </div>
+
+    <nav class="nav flex-column gap-1">
+      <a href="#" id="nav-dashboard" class="nav-link active d-flex align-items-center gap-3 p-3 rounded-3">
+        <i class="bi bi-grid-1x2-fill"></i> Dashboard
+      </a>
+      <a href="#" id="nav-produtos" class="nav-link d-flex align-items-center gap-3 p-3 rounded-3">
+        <i class="bi bi-box-seam-fill"></i> Produtos
+      </a>
+      <a href="#" id="nav-historico" class="nav-link d-flex align-items-center gap-3 p-3 rounded-3">
+        <i class="bi bi-clock-history"></i> Histórico
+      </a>
+      <!-- Visível apenas para admin -->
+      <a href="#" id="nav-usuarios" class="nav-link d-flex align-items-center gap-3 p-3 rounded-3 d-none">
+        <i class="bi bi-people-fill"></i> Usuários
+      </a>
+    </nav>
+
+    <div class="mt-auto">
+      <!-- Info do usuário logado (FIX #7: dinâmico) -->
+      <div class="d-flex align-items-center gap-2 py-3 border-top border-secondary mb-1">
+        <div id="sidebar-avatar"
+             class="avatar bg-success rounded-circle d-flex align-items-center justify-content-center fw-bold text-dark flex-shrink-0"
+             style="width: 36px; height: 36px;">?</div>
+        <div class="overflow-hidden">
+          <div class="small fw-bold text-truncate" id="sidebar-nome">—</div>
+          <div class="text-secondary text-capitalize" style="font-size: 11px;" id="sidebar-role">—</div>
+        </div>
+      </div>
+      <a href="#" id="nav-logout" class="nav-link d-flex align-items-center gap-3 p-3 rounded-3 text-danger fw-bold">
+        <i class="bi bi-box-arrow-right"></i> Sair do Sistema
+      </a>
+    </div>
+  </aside>
+
+  <!-- Área Principal -->
+  <main class="flex-grow-1 bg-light" id="main-content">
+
+    <!-- ═══ DASHBOARD ═══════════════════════════════════════ -->
+    <section id="section-dashboard" class="app-section">
+      <header class="bg-white border-bottom shadow-sm mb-4">
+        <div class="container-fluid py-3 px-4">
+          <h2 class="fw-bold text-dark mb-0">Painel de Controle</h2>
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 small">
+              <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted">Home</a></li>
+              <li class="breadcrumb-item active">Dashboard</li>
+            </ol>
+          </nav>
+        </div>
+      </header>
+
+      <div class="p-4 pt-0">
+        <!-- KPIs -->
+        <div class="row g-3 mb-4">
+          <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm p-4 rounded-4 h-100">
+              <span class="text-secondary text-uppercase fw-bold" style="font-size: 11px;">
+                <i class="bi bi-boxes me-1"></i>Total de Produtos
+              </span>
+              <h3 class="h2 fw-bold mt-2 mb-0" id="kpi-total">—</h3>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm p-4 rounded-4 h-100">
+              <span class="text-secondary text-uppercase fw-bold" style="font-size: 11px;">
+                <i class="bi bi-currency-dollar me-1"></i>Patrimônio Estimado
+              </span>
+              <h3 class="h2 fw-bold mt-2 mb-0 text-success" id="kpi-valor">—</h3>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm p-4 rounded-4 h-100">
+              <span class="text-secondary text-uppercase fw-bold" style="font-size: 11px;">
+                <i class="bi bi-exclamation-triangle me-1 text-warning"></i>Alertas de Estoque
+              </span>
+              <h3 class="h2 fw-bold mt-2 mb-0 text-warning" id="kpi-alertas">—</h3>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm p-4 rounded-4 h-100">
+              <span class="text-secondary text-uppercase fw-bold" style="font-size: 11px;">
+                <i class="bi bi-x-circle me-1 text-danger"></i>Produtos Zerados
+              </span>
+              <h3 class="h2 fw-bold mt-2 mb-0 text-danger" id="kpi-zerados">—</h3>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gráfico -->
+        <div class="card border-0 shadow-sm rounded-4">
+          <div class="card-body p-4">
+            <h6 class="fw-bold text-secondary mb-4">
+              <i class="bi bi-bar-chart-line-fill me-2"></i>Patrimônio por Produto (Top 10)
+            </h6>
+            <div style="height: 300px;">
+              <canvas id="patrimonioChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ PRODUTOS ════════════════════════════════════════ -->
+    <section id="section-produtos" class="app-section d-none">
+      <header class="bg-white border-bottom shadow-sm mb-4">
+        <div class="container-fluid py-3 px-4">
+          <div class="row align-items-center g-3">
+            <div class="col-md-4">
+              <h2 class="fw-bold text-dark mb-0">Gestão de Inventário</h2>
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 small">
+                  <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted">Home</a></li>
+                  <li class="breadcrumb-item active">Estoque</li>
+                </ol>
+              </nav>
+            </div>
+            <div class="col-md-4">
+              <div class="input-group rounded-pill border bg-light px-3 py-1 mb-2">
+                <span class="input-group-text bg-transparent border-0 text-muted">
+                  <i class="bi bi-search"></i>
+                </span>
+                <input type="text" id="searchInput" class="form-control border-0 shadow-none bg-transparent" placeholder="Pesquisar produto..." />
+              </div>
+              <div class="d-flex justify-content-center gap-2">
+                <button class="btn btn-sm rounded-pill px-3 fw-medium btn-dark filter-btn" data-filter="todos">Todos</button>
+                <button class="btn btn-sm rounded-pill px-3 fw-medium btn-outline-warning filter-btn" data-filter="baixo">
+                  <i class="bi bi-exclamation-triangle me-1"></i>Baixo
+                </button>
+                <button class="btn btn-sm rounded-pill px-3 fw-medium btn-outline-danger filter-btn" data-filter="zerado">
+                  <i class="bi bi-x-circle me-1"></i>Zerado
+                </button>
+              </div>
+            </div>
+            <div class="col-md-4 d-flex justify-content-end gap-2">
+              <button class="btn btn-outline-success fw-bold shadow-sm rounded-pill px-4" onclick="exportToExcel()">
+                <i class="bi bi-file-earmark-excel me-1"></i>Exportar
+              </button>
+              <button class="btn btn-success fw-bold shadow-sm rounded-pill px-4" id="openModal"
+                      data-bs-toggle="modal" data-bs-target="#modalProduto">
+                <i class="bi bi-plus-lg me-1"></i>Novo Produto
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="p-4 pt-0">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="bg-light">
+                <tr>
+                  <th class="ps-4">#</th>
+                  <th>Produto</th>
+                  <th>Descrição</th>
+                  <th>Quantidade</th>
+                  <th>Preço Unit.</th>
+                  <th>Valor Total</th>
+                  <th class="text-end pe-4">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="table-body" class="border-top-0"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ HISTÓRICO ═══════════════════════════════════════ -->
+    <section id="section-historico" class="app-section d-none">
+      <header class="bg-white border-bottom shadow-sm mb-4">
+        <div class="container-fluid py-3 px-4">
+          <h2 class="fw-bold text-dark mb-0">Histórico de Movimentações</h2>
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 small">
+              <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted">Home</a></li>
+              <li class="breadcrumb-item active">Histórico</li>
+            </ol>
+          </nav>
+        </div>
+      </header>
+
+      <div class="p-4 pt-0">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="bg-light">
+                <tr>
+                  <th class="ps-4">#</th>
+                  <th>Data / Hora</th>
+                  <th>Produto</th>
+                  <th>Tipo</th>
+                  <th>Quantidade</th>
+                  <th>Usuário</th>
+                </tr>
+              </thead>
+              <tbody id="table-historico" class="border-top-0">
+                <tr>
+                  <td colspan="6" class="text-center text-muted py-5">Carregando...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ USUÁRIOS ════════════════════════════════════════ -->
+    <section id="section-usuarios" class="app-section d-none">
+      <header class="bg-white border-bottom shadow-sm mb-4">
+        <div class="container-fluid py-3 px-4">
+          <div class="row align-items-center">
+            <div class="col-md-6">
+              <h2 class="fw-bold text-dark mb-0">Gestão de Usuários</h2>
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 small">
+                  <li class="breadcrumb-item text-muted">Configurações</li>
+                  <li class="breadcrumb-item active">Equipe</li>
+                </ol>
+              </nav>
+            </div>
+            <div class="col-md-6 text-end">
+              <button class="btn btn-success fw-bold shadow-sm rounded-pill px-4 py-2"
+                      data-bs-toggle="modal" data-bs-target="#modalUsuario">
+                <i class="bi bi-person-plus me-1"></i>Novo Usuário
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="p-4 pt-0">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="bg-light">
+                <tr>
+                  <th class="ps-4">#</th>
+                  <th>Nome</th>
+                  <th>E-mail</th>
+                  <th>Nível de Acesso</th>
+                  <th class="text-end pe-4">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="table-usuarios" class="border-top-0"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ─── Modal: Produto ────────────────────────────────────── -->
+<!-- FIX #3: estrutura do modal corrigida (botões agora dentro do form e dentro do modal-body) -->
+<div class="modal fade" id="modalProduto" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 rounded-4 shadow">
+      <div class="modal-header border-bottom-0 p-4">
+        <h5 class="modal-title fw-bold" id="modalProdutoTitle">Cadastrar Novo Produto</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+      <div class="modal-body p-4 pt-0">
+        <form id="productForm">
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-secondary">Nome do Produto *</label>
+            <input type="text" class="form-control rounded-3" id="nome" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-secondary">Descrição Técnica</label>
+            <textarea class="form-control rounded-3" id="descricao" rows="2"></textarea>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-secondary">Preço Unitário (R$) *</label>
+              <input type="number" class="form-control rounded-3" id="preco" step="0.01" min="0" required />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-secondary">Qtd. Inicial</label>
+              <input type="number" class="form-control rounded-3" id="quantidade" value="0" min="0" />
+            </div>
+          </div>
+          <div class="mb-4">
+            <label class="form-label small fw-bold text-secondary">Alerta de Estoque Mínimo</label>
+            <input type="number" class="form-control rounded-3" id="limite_minimo" value="5" min="0" />
+          </div>
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-light w-100 fw-bold rounded-pill" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-success w-100 fw-bold rounded-pill">Salvar Produto</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── Modal: Movimentação ───────────────────────────────── -->
+<div class="modal fade" id="modalMovimentacao" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content border-0 rounded-4">
+      <div class="modal-header border-0 p-4 pb-2">
+        <h5 class="modal-title fw-bold">Movimentar Estoque</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4 pt-2">
+        <p class="small text-muted mb-3 fw-medium" id="mov-produto-nome"></p>
+        <form id="movimentacaoForm">
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-secondary">Tipo de Operação</label>
+            <select class="form-select rounded-3" id="mov-tipo">
+              <option value="entrada">📥 Entrada (+)</option>
+              <option value="saida">📤 Saída (–)</option>
+            </select>
+          </div>
+          <div class="mb-4">
+            <label class="form-label small fw-bold text-secondary">Quantidade</label>
+            <input type="number" class="form-control rounded-3" id="mov-qtd" min="1" required />
+            <div class="form-text" id="mov-saldo-info"></div>
+          </div>
+          <button type="submit" class="btn btn-success w-100 fw-bold rounded-pill">Confirmar Movimentação</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── Modal: Usuário ────────────────────────────────────── -->
+<!-- FIX #4: aspas escapadas corrigidas -->
+<div class="modal fade" id="modalUsuario" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 rounded-4">
+      <div class="modal-header border-0 p-4 pb-2">
+        <h5 class="modal-title fw-bold">Cadastrar Usuário</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4 pt-0">
+        <form id="usuarioForm">
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-secondary">Nome Completo *</label>
+            <input type="text" class="form-control rounded-3" id="user-nome" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-secondary">E-mail *</label>
+            <input type="email" class="form-control rounded-3" id="user-email" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-secondary">Senha *</label>
+            <input type="password" class="form-control rounded-3" id="user-senha" required />
+          </div>
+          <div class="mb-4">
+            <label class="form-label small fw-bold text-secondary">Nível de Acesso</label>
+            <select class="form-select rounded-3" id="user-role">
+              <option value="operador">Operador (Consulta e Movimentação)</option>
+              <option value="admin">Administrador (Acesso Total)</option>
+            </select>
+          </div>
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-light w-100 fw-bold rounded-pill" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-success w-100 fw-bold rounded-pill">Salvar Usuário</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── Modal: Editar Usuário ─────────────────────────────── -->
+<div class="modal fade" id="modalEditarUsuario" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 rounded-4 shadow">
+      <div class="modal-header border-0 p-4 pb-2">
+        <h5 class="modal-title fw-bold">
+          <i class="bi bi-pencil-square me-2 text-success"></i>Editar Usuário
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4 pt-0">
+
+        <!-- Badge indicando quem está sendo editado -->
+        <div id="editUserBadge" class="alert alert-light border rounded-3 py-2 px-3 mb-4 d-flex align-items-center gap-2 small fw-medium"></div>
+
+        <form id="editarUsuarioForm">
+          <input type="hidden" id="edit-user-id" />
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-secondary">Nome Completo *</label>
+            <input type="text" class="form-control rounded-3" id="edit-user-nome" required />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-secondary">E-mail *</label>
+            <input type="email" class="form-control rounded-3" id="edit-user-email" required />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-secondary">
+              Nova Senha
+              <span class="text-muted fw-normal">(deixe em branco para manter a atual)</span>
+            </label>
+            <div class="input-group">
+              <input type="password" class="form-control rounded-start-3" id="edit-user-senha"
+                     placeholder="••••••••" autocomplete="new-password" />
+              <button type="button" class="btn btn-outline-secondary rounded-end-3"
+                      id="toggleEditSenha" title="Mostrar/ocultar senha">
+                <i class="bi bi-eye" id="toggleEditSenhaIcon"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label small fw-bold text-secondary">Nível de Acesso</label>
+            <select class="form-select rounded-3" id="edit-user-role">
+              <option value="operador">👤 Operador (Consulta e Movimentação)</option>
+              <option value="admin">👑 Administrador (Acesso Total)</option>
+            </select>
+            <div id="edit-role-warning" class="form-text text-warning fw-medium d-none">
+              <i class="bi bi-exclamation-triangle me-1"></i>
+              Atenção: você está editando o seu próprio nível de acesso.
+            </div>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-light w-100 fw-bold rounded-pill"
+                    data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-success w-100 fw-bold rounded-pill">
+              <i class="bi bi-check-lg me-1"></i>Salvar Alterações
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── Scripts ───────────────────────────────────────────── -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- FIX #2: Chart.js importado apenas UMA vez (linha duplicada removida) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>

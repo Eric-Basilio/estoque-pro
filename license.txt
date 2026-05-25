@@ -1,0 +1,44 @@
+CONTRATO DE LICENCA DE USO DE SOFTWARE
+Estoque Pro - Versao 1.0
+(c) 2025 Eric Daniel Santos Basilio. Todos os direitos reservados.
+
+LEIA ATENTAMENTE ANTES DE INSTALAR
+
+Ao instalar ou utilizar este software, voce concorda com os termos abaixo.
+Se nao concordar, nao instale o programa.
+
+1. LICENCA DE USO
+   Este software e licenciado, nao vendido. Eric Basilio concede ao licenciado
+   uma licenca pessoal, intransferivel e nao exclusiva de uso deste programa
+   em um unico computador.
+
+2. RESTRICOES
+   E expressamente proibido:
+   a) Copiar, distribuir ou redistribuir este software sem autorizacao;
+   b) Fazer engenharia reversa, decompilar ou desmontar o software;
+   c) Alugar, vender ou sublicenciar o software a terceiros;
+   d) Remover avisos de copyright ou identificacoes do autor.
+
+3. PROPRIEDADE INTELECTUAL
+   O software, incluindo codigo-fonte, design e documentacao, e propriedade
+   exclusiva de Eric Basilio e protegido pela Lei 9.610/98 (Lei de Direitos
+   Autorais) e legislacao internacional aplicavel.
+
+4. DADOS DO USUARIO
+   O software armazena dados localmente no computador do usuario.
+   Eric Basilio nao coleta, acessa nem transmite quaisquer dados inseridos.
+
+5. ISENCAO DE GARANTIAS
+   O software e fornecido "como esta", sem garantias de qualquer tipo.
+   Eric Basilio nao se responsabiliza por danos decorrentes do uso.
+
+6. RESCISAO
+   Esta licenca e rescindida automaticamente se voce violar qualquer termo.
+   Ao termino, voce deve desinstalar e destruir todas as copias do software.
+
+7. CONTATO
+   Para licenciamento comercial ou duvidas:
+   Eric Daniel Santos Basilio
+   GitHub: https://github.com/Eric-Basilio
+
+Ao clicar em "Concordo", voce aceita integralmente este contrato.

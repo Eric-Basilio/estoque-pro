@@ -1,0 +1,56 @@
+{
+  "name": "pex-gerenciador-de-estoque",
+  "version": "1.0.0",
+  "description": "Estoque Pro — Gerenciador de Inventário",
+  "main": "main.js",
+  "author": "Eric Daniel Santos Basilio",
+  "scripts": {
+    "start": "node server.js",
+    "electron": "electron .",
+    "build:win": "electron-builder --win --x64"
+  },
+  "build": {
+    "appId": "com.ericbasilio.estoquepro",
+    "productName": "Estoque Pro",
+    "copyright": "© 2025 Eric Daniel Santos Basilio",
+    "asar": true,
+    "asarUnpack": ["node_modules/sql.js/**/*"],
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "server.js",
+      "database.js",
+      "license.txt",
+      "public/**/*",
+      "node_modules/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "public/icon.ico",
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "public/icon.ico",
+      "uninstallerIcon": "public/icon.ico",
+      "installerHeaderIcon": "public/icon.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Estoque Pro",
+      "license": "license.txt",
+      "deleteAppDataOnUninstall": false
+    }
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^4.18.2",
+    "sql.js": "^1.10.2"
+  },
+  "devDependencies": {
+    "electron": "^35.0.0",
+    "electron-builder": "^26.0.0"
+  }
+}

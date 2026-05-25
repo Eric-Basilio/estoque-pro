@@ -1,0 +1,114 @@
+:root {
+  --sidebar-bg: #0f172a;
+  --accent-success: #10b981;
+  --font-display: "Syne", sans-serif;
+  --font-main: "DM Sans", sans-serif;
+}
+
+body {
+  font-family: var(--font-main);
+  color: #1e293b;
+}
+
+h2,
+.logo-name,
+.modal-title {
+  font-family: var(--font-display);
+}
+
+/* ─── Sidebar ─────────────────────────────── */
+
+.sidebar {
+  width: 260px;
+  background-color: var(--sidebar-bg);
+  min-height: 100vh;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+
+.nav-link {
+  color: #94a3b8;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border-left: 4px solid transparent;
+}
+
+.nav-link:hover {
+  color: #e2e8f0;
+  background-color: #1e293b;
+}
+
+.nav-link.active {
+  color: #ffffff !important;
+  background-color: #1e293b;
+  border-left-color: var(--accent-success);
+}
+
+/* ─── Tabela ──────────────────────────────── */
+
+.table thead th {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+  border: none;
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+#table-body tr:hover td,
+#table-historico tr:hover td,
+#table-usuarios tr:hover td {
+  background-color: #f8fafc;
+}
+
+/* ─── Badges de estoque ───────────────────── */
+
+.badge-stock-ok      { background-color: #d1fae5; color: #065f46; }
+.badge-stock-low     { background-color: #fef3c7; color: #92400e; }
+.badge-stock-empty   { background-color: #fee2e2; color: #991b1b; }
+
+/* ─── Botões ──────────────────────────────── */
+
+.btn-success {
+  background-color: var(--accent-success);
+  border-color: var(--accent-success);
+}
+
+.btn-success:hover,
+.btn-success:focus {
+  background-color: #059669;
+  border-color: #059669;
+}
+
+/* ─── Inputs ──────────────────────────────── */
+
+/* FIX #15: corrigido "0.25 mil rem" → "0.25rem" */
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--accent-success);
+  box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.2);
+}
+
+/* ─── Cards KPI ───────────────────────────── */
+
+.card {
+  transition: box-shadow 0.15s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* ─── Main content ────────────────────────── */
+
+#main-content {
+  min-height: 100vh;
+  overflow-y: auto;
+}
